@@ -15,6 +15,7 @@
 *.exe
 *.out*
 *.app
+*.in
 
 # Working dir
 work/
