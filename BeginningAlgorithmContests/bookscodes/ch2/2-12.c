@@ -5,9 +5,41 @@ int main() {
   FILE *fin, *fout;
   fin = fopen("input.in", "rb");
   fout = fopen("output.out", "wb");
-  int n, max = -INF, min = INF, sum = 0, cnt = 0,
-      case_n = 0, case_i = 0, case_cnt = 0;
-  while (fscanf(fin, "%d", &n) == 1) {
+  int n, x, kase = 0;
+
+
+  while (fscanf(fin, "%d", &n) == 1 && n) {
+    int sum = 0, max = -INF, min = INF;
+    for (int i = 0; i < n; i++) {  // loop n count
+      fscanf(fin, "%d", &x);
+      if (max < x) {max = x;}
+      if (x < min) {min = x;}
+      sum += x;
+    }
+    if (kase) fprintf(fout, "\n");
+    fprintf(fout, "Case %d : %d %d %.3f\n", kase++, min, max, (double)sum / n);
+    /*
+    if (is_line) {
+      if (n == 0) {
+        break;
+      } else {
+        case_n = n;
+        max = -INF, min = INF, sum = 0, cnt = 0;
+        is_line = 0;  // next value is valid value
+      }
+    } else {
+      if (max < n) {max = n;}
+      if (n < min) {min = n;}
+      sum += n;
+      cnt++;
+      if (cnt == case_n) {
+        fprintf(fout, "Case %d : %d %d %.3f\n\n", case_cnt, min, max, (double)sum / cnt);
+        is_line = 1;
+        case_cnt++;
+      }
+    }
+    */
+    /*
     if (case_i == 0) {
       if (n == 0) {
         break;
@@ -30,11 +62,12 @@ int main() {
     if (max < n) {max = n;}
     if (n < min) {min = n;}
     sum += n;
-// /*
-    printf("%d %d %d\n", min, max, sum);
-// */
+
+    // printf("%d %d %d\n", min, max, sum);
+
     cnt++;
     case_i++;
+    */
   }
 
   fclose(fin);
