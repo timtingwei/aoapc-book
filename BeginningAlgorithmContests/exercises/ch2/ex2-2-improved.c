@@ -8,15 +8,13 @@ int main() {
     if (n == 3) {
       n = 0;
     }
-    int is_find = 0;
-    for (int i = 10; i <= 100; i++) {
-      if ((i % 3 == a) && (i % 5 == b) && (i % 7 == c)) {
-        fprintf(fout, "Case %d: %d\n", case_n++, i);
-        is_find = 1;
-        break;
-      }
+    int i = 70 * a + 21 * b + 15 * c;
+    i = (i <= 105) ? i : i % 105;
+    if (10 <= i && i <= 100) {
+      fprintf(fout, "Case %d: %d\n", case_n++, i);
+    } else {
+      fprintf(fout, "Case %d: No answer\n", case_n++);
     }
-    if (!is_find) fprintf(fout, "Case %d: No answer\n", case_n++);
     n++;
   }
   fclose(fin);
