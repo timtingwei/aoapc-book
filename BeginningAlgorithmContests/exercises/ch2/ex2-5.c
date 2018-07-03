@@ -1,3 +1,5 @@
+// copyright [2018] <mituh>
+// convert to decimal
 #include <stdio.h>
 int main() {
   int a, b, c, kase = 1;
