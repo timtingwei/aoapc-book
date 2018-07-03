@@ -1,3 +1,9 @@
+// copyright [2018] <mituh>
+// 1, memset设置数组初始值
+// 2, ! 取反运算符
+// 3, 无{}else, 与向前最近if配对, 且只包括一个分号行
+// 4, 标准输出时, 中间空格, 结尾换行, first
+
 #include <stdio.h>
 #include <string.h>
 #define MAXN 10000
