@@ -1,14 +1,17 @@
 // copyright [2018] <mituh>
 // snake
+// 书中例子, 二维数组, 使用while不确定循环次数
+// 向某一方向不超过边界, 且不能占据已经占据的空间
 
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#define MAXN 100000
-#define MAXM 100000
+#define MAXN 10000
+#define MAXM 10000
 int a[MAXM][MAXN];
 
 int main() {
+
   int n, x, y, tot = 0;
   scanf("%d", &n);
   memset(a, 0, sizeof(a));
@@ -33,3 +36,9 @@ int main() {
   printf("Use time: %f\n", (double)clock()/CLOCKS_PER_SEC);
   return 0;
 }
+
+// echo 80 | ./3-3.out
+// Use time: 0.232251
+
+// echo 800 | ./3-3.out
+// Use time: 0.459426

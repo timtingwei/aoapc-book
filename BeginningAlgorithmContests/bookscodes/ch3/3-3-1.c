@@ -1,8 +1,15 @@
 // copyright [2018] <mituh>
 // snake
+// 自己的做法
+// 根据每次在某一方向上移动的规律, 将所有移动行为放入一维数组a_drc
+// n = 6
+// 2 30 12 30 12 30
+// 5 55 44 33 22 11
+// 2 30 12 30 12 30
 
 #include <stdio.h>
-#define MAXN 100
+#include <time.h>
+#define MAXN 10000000
 int a[MAXN];
 int a_drc[MAXN];
 
@@ -35,5 +42,13 @@ int main() {
     if (first) first = 0; else printf(" "); printf("%d", a[i]);
     if (++cnt == n) {cnt = 0; first = 1; printf("\n");}
   }
+
+  printf("Use time: %f\n", (double)clock()/CLOCKS_PER_SEC);
   return 0;
 }
+
+// echo 80 | ./3-3-1.out
+// Use time: 0.005970
+
+// echo 800 | ./3-3-1.out
+// Use time: 0.236074
