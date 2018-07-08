@@ -1,46 +1,32 @@
 // copyright [2018] <mituh>
 // Palindromes, uVa401
+// 为reverse char写函数, 而不是直接写对应的常量数组
+// 用到ctype中的isaplha, 另外还可以使用isdigit, isprint, toupper, tolower
 
 #include <stdio.h>
 #include <string.h>
-int main() {
-  char a[1000];
-  scanf("%s", a);
-  const char rev[] = "A   3  HIL JM O   2TUVWXY51SE Z  8 ";
-  const char let[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
-  const char* msg[] = {"not a palindrome.", "a mirror string.",
-                       "is a regular palindrome.", "is a mirrored palindrome."};
-  // judge palindromes
-  int i, is_palindromes = 1, is_mirrored = 1;
-  for (int beg = 0, end = strlen(a) - 1; beg <= end; beg++, end--) {
-    if (a[beg] != a[end]) is_palindromes = 0;
-    // printf("%c %c\n", a[beg], a[end]);
-    for (i = 0; a[end] && let[i] != a[end]; i++) {}
-    // printf("%d %c %c\n", i, a[end], let[i]);
-    if (a[beg] != rev[i]) is_mirrored = 0;
-  }
-  // printf("%d %d\n", is_palindromes, is_mirrored);
-  /*
-  printf("%s -- ", a);
-  char curr_msg[1000];
-  if (is_palindromes) {
-    if (is_mirrored) {
-      printf("%s\n", msg[3]);
-    } else {
-      printf("%s\n", msg[2]);
-    }
+#include <ctype.h>
+
+char a[1000];
+const char rev[] = "A   3  HIL JM O   2TUVWXY51SE Z  8 ";
+const char* msg[] = {"not a palindrome.", "a mirrored string.",
+                     "is a regular palindrome.", "is a mirrored palindrome."};
+
+char r(char ch) {
+  if (isalpha(ch)) {
+    return rev[ch - 'A'];
   } else {
-    if (is_mirrored) {
-      printf("%s\n", msg[1]);
-    } else {
-      printf("%s\n", msg[0]);
-    }
+    return rev[ch - '1' + 25];
   }
-  */
-  printf("%s -- %s\n", a, msg[is_palindromes*2 + is_mirrored]);
 }
 
-// 0, 0 => not a palindrome.         0
-// 0, 1 => a mirror string.          1
-// 1, 0 => is a regular Palindrome.  2
-// 1, 1 => is a mirrored palindrome. 3
+int main() {
+  while (scanf("%s", a) == 1) {
+    int len = strlen(a), p = 1, m = 1;
+    for (int i = 0; i < len; i++) {
+      if (a[i] != a[len - 1 - i]) p = 0;
+      if (r(a[i]) != a[len - 1 - i]) m = 0;
+    }
+    printf("%s -- is %s\n", a, msg[p*2 + m]);
+  }
+}
