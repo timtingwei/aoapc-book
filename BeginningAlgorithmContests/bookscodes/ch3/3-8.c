@@ -6,6 +6,7 @@
 */
 
 #include <stdio.h>
+// #define LOCAL
 #define MAXN 1000
 
 void print_arr(int* arr, int n) {
@@ -17,6 +18,10 @@ void print_arr(int* arr, int n) {
 }
 
 int main() {
+#ifdef LOCAL
+  freopen("input.in", "r", stdin);
+  freopen("output.out", "w", stdout);
+#endif
   int n, tmp, cnt = 0;
   while ((scanf("%d", &n) == 1) && n) {
     // each Game
@@ -31,16 +36,15 @@ int main() {
     int ok = 1;
     while (ok) {
       int all_zero = 1, A = 0, B = 0;
-      int a_use[MAXN] = {};
+      int a_use[MAXN] = {}, b_use[MAXN] = {};
       for (int i = 0; i < n; i++) {
         if (scanf("%d", &tmp) == 1) {
           b[i] = tmp;
-          // /*
           if (a[i] == tmp) {
-            a_use[i] = 1;
+            a_use[i] = 1; b_use[i] = 1;
             A++;
           } else {
-            a_use[i] = 0;
+            a_use[i] = 0; b_use[i] = 0;
           }
           all_zero = (tmp != 0) ? 0 : all_zero;
         }
@@ -50,6 +54,7 @@ int main() {
 
       // judge the A and B, put out hint
       for (int y = 0; y < n; y++) {    // 猜测数组 b 的位置
+        if (b_use[y]) continue;
         int ti = 0;
         while (ti < n) {
           if (a_use[ti]) {
@@ -63,7 +68,7 @@ int main() {
           }
         }
       }
-      printf("(%d,%d)\n", A, B);
+      printf("    (%d,%d)\n", A, B);
     }
   }
 
