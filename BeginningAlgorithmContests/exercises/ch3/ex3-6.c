@@ -12,18 +12,17 @@
 
 #define MAXN 100 + 10
 char a[MAXN][MAXN];         // 标准输入字符的二维数组
-char cross[MAXN][MAXN];     // 储存横向字符串的数组
-char down[MAXN][MAXN];      // 储存纵向字符串的数组
-int c_i[MAXN];              // 保存横向字符串索引
-int d_i[MAXN];              // 保存纵向字符串索引
+
+
 
 int foo(const int r, const int c) {
   // 保存字符的数组置为0
   memset(a, '*', sizeof(a));
-  // 输入字符到二维数组
-  // int r, c;
-  // scanf("%d%d", &r, &c);
-  // printf("%d %d\n", r, c);
+  // 将其他数组清空 why? 此时在声明成全局, 会在不同答案间互相干扰
+  char cross[MAXN][MAXN] = {};     // 储存横向字符串的数组
+  char down[MAXN][MAXN] = {};      // 储存纵向字符串的数组
+  int c_i[MAXN] = {};              // 保存横向字符串索引
+  int d_i[MAXN] = {};              // 保存纵向字符串索引
   for (int i = 1; i <= r; i++) {
     scanf("%s", a[i]);
     for (int j = c; j > 0; j--) {
@@ -112,6 +111,20 @@ int main() {
 
   return 0;
 }
+
+
+/*
+9 9
+*LAUREL**
+PASSERINE
+EST*CABER
+WHOA*SETA
+**UTTER**
+LINT*RARE
+INDIE*TON
+INERTNESS
+**DECODE*
+*/
 
 /*
 2 2
