@@ -1,52 +1,22 @@
 // copyright [2018] <mituh>
-// 227 - Puzzle(谜题)
+// UVa 227 - Puzzle(谜题)
 /*
-
-TRGSJ
-XDOKI
-M VLN
-WPABE
-UQHCF
-ARRBBL0
-
- 012345
-0
-1 TRGSJ
-2 XDOKI
-3 M VLN
-4 WPABE
-5 UQHCF
-pos[0] = 3, pos[1] = 2
-
-ABCDE
-FGHIJ
-KLMNO
-PQRS
-TUVWX
-AAA
-LLLL0
-
-Puzzle #3:
-T R G S J
-X O K L I
-M D V B N
-W P   A E
-U Q H C F
-
+  思路: 
+  所有数值储存在二维数组a中;
+  pos[2], 存储a, b, 向某个方向移动就是改变ab;
+  移动时交换ab对应的格子和下一个格子的数值.
 */
 #include <stdio.h>
 #include <string.h>
 #define MAXN 5 + 5
-#define MAXM 20 + 5
 char a[MAXN][MAXN];
-char m[MAXM];
 
 void swap_c(char *ca_p, char *cb_p) {
   char ct;
   ct = *ca_p; *ca_p = *cb_p; *cb_p = ct;
 }
 
-void watch_msg(char (*a)[MAXN], const int *pos) {
+void watch_msg(char (*a)[MAXN]) {
   for (int i = 1; i <= 5; i++) {
     for (int j = 1; j <= 5; j++) {
       (j == 5) ? printf("%c", a[i][j]) : printf("%c ", a[i][j]);
@@ -58,11 +28,13 @@ void watch_msg(char (*a)[MAXN], const int *pos) {
 int foo(int* kase, int* find_z) {
   // 将二维数组设置成全空字符
   memset(a, ' ', sizeof(a));
-  int c, j = 0;
+  int c, i = 1, j = 0;
   int pos[2];
   while ((c = getchar()) != EOF) {
     // 如果首个字符为Z, 找到z, 返回该函数
-    if (c == 'Z') {*find_z = 1; return 0;}
+    if (c == 'Z') {
+      *find_z = 1; return 0;
+    }
     if (c == '\n') continue;
     if (c == ' ') { pos[0] = j / 5 + 1, pos[1] = j % 5 + 1; }  // 提前右移
     a[j/5+1][j%5] = c;
@@ -82,6 +54,11 @@ int foo(int* kase, int* find_z) {
     // 每行首部为空字符
     a[i][0] = ' ';
   }
+
+  if (*kase != 0) {
+    printf("\n");
+  }
+
 
   int ok = 1;
   while ((c = getchar()) != '0') {
@@ -129,16 +106,19 @@ int foo(int* kase, int* find_z) {
       a[pos[0]][pos[1]] = ct;
       pos[0]++;
     } else {
-      return -1;
+      ok = 0;   // Q?
+      continue;
     }
-    // watch_msg(a, pos);
+    // watch_msg(a);
   }
+
   printf("Puzzle #%d:\n", ++(*kase));
   if (ok) {
-    watch_msg(a, pos);
+    watch_msg(a);
   } else {
     printf("This puzzle has no final configuration.\n");
   }
+
   return 0;
 }
 
@@ -153,8 +133,6 @@ int main() {
     foo(&kase, &find_z);
     if (find_z) {
       break;
-    } else {
-      printf("\n");
     }
   }
 
@@ -162,6 +140,7 @@ int main() {
 }
 
 /*
+Sample input:
  BCDE
 FGHIJ
 KLMNO
@@ -202,6 +181,8 @@ UQHCF
 ARRBBLQ0
 Z
 
+Sample output:
+
 Puzzle #1:
 This puzzle has no final configuration.
 
@@ -223,5 +204,4 @@ This puzzle has no final configuration.
 
 Puzzle #6:
 This puzzle has no final configuration.
-
 */
