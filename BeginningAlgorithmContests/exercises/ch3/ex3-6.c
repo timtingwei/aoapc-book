@@ -87,17 +87,21 @@ int foo(const int r, const int c) {
 
   printf("Across\n");
   for (int i = 0; i < c_cnt; i++) {
-    printf("  %d.%s\n", c_i[i], cross[i]);
+    printf("%3d.%s\n", c_i[i], cross[i]);
   }
   printf("Down\n");
   for (int i = 0; i < d_cnt; i++) {
-    printf("  %d.%s\n", d_i[i], down[i]);
+    printf("%3d.%s\n", d_i[i], down[i]);
   }
 
   return 0;
 }
 
 int main() {
+#ifdef LOCAL
+  freopen("a.in", "r", stdin);
+  freopen("b.out", "w", stdout);
+#endif
   // 输入字符到二维数组
   int r, c, kase = 0;
   while (scanf("%d", &r) && (r != 0) && scanf("%d", &c)) {
