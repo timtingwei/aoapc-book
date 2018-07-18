@@ -104,9 +104,9 @@ int main() {
   // 输入字符到二维数组
   int r, c, kase = 0;
   while (scanf("%d", &r) && (r != 0) && scanf("%d", &c)) {
+    (kase == 0) ? printf("") : printf("\n");
     printf("puzzle #%d:\n", ++kase);
     foo(r, c);
-    printf("\n");
   }
 
   return 0;
