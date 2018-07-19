@@ -8,8 +8,8 @@
 */
 
 #include <stdio.h>
-int a_intg[1024];
-int a_m[1024];
+int a_intg[10000];
+int a_m[10000];
 
 int main() {
 #ifdef LOCAL
@@ -18,7 +18,6 @@ int main() {
 #endif
   int a, b, kase = 0;
   while (scanf("%d %d", &a, &b) == 2) {
-    if (++kase != 1) printf("\n");
     printf("%d/%d = ", a, b);
     int ie = 0, ib = 0, find = 0, id = 1;
     int t = a / b;
@@ -40,7 +39,6 @@ int main() {
       ie++;
     }
 
-
     if ((ie - ib) <= 50) {
       for (int i = 0; i <= ie; i++) {
         if (i == id) putchar('.');
@@ -57,20 +55,10 @@ int main() {
       }
     }
     printf("\n");
-    printf("%4d = number of digits in repeating cycle\n", ie - ib);
+    printf("   %d = number of digits in repeating cycle\n", ie - ib);
+    printf("\n");
   }
 
 
   return 0;
 }
-
-
-/*
-41/468 = 0.08(760683)
-   6 = number of digits in repeating cycle
-
-1169/725 = 1.61(2413793103448275862068965517)
-   28 = number of digits in repeating cycle
-
-2962/465 = 6.3(698924731182795)
-*/
