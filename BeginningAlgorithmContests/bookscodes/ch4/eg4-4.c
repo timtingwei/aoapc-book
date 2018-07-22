@@ -13,6 +13,7 @@ char s1[MAXN];     /* S#**\ */
 char s2[MAXM];  // 0100000101101100011100101000
 char s3[MAXN][MAXD];   // 0 00 01 10 000 010 011 100 0000 ..
 char ans_s[MAXN];     // 输出
+int N;
 
 
 
@@ -34,13 +35,29 @@ void generate_s3(int n) {
     }
     b++;  // 改变位数
   }
-  for (int i = 0; i < cnt; i++) printf("%s\n", s3[i]);
-  printf("%d\n", cnt);
+  // for (int i = 0; i < cnt; i++) printf("%s\n", s3[i]);
 }
 
 int btoi(int* a, int n) {
   // 将二进制转化成十进制, 3位限制
   return ((a[0]*2) + a[1]) * 2 + a[2];
+}
+
+int compare(char (*s)[MAXD], int n, char* s2) {
+  // 在互不重复长度为n的字符串数组s中, 找到s2, 返回s2在s中的索引
+  int p = 0, find = 0;
+  for (int i = 0; i < n; i++) {
+    if (strlen(s[i]) == strlen(s2)) {
+      int bad = 0;
+      for (int j = 0; j < strlen(s[i]); j++) {
+        if (s[i][j] != s2[j]) {bad = 1; break;}
+      }
+      if (!bad) {p = i; find = 1; break;}
+    }
+  }
+  if (find) {
+    return p;
+  } else { return -1;}
 }
 
 int find_in_s(int* a, int n) {
@@ -51,10 +68,12 @@ int find_in_s(int* a, int n) {
     find_s[i] = a[i] + '0';
     if (a[i] != 1) all_one = 0;
   }
-  if (all_one) { printf("all one!! return\n"); return -1; }
-  int find = -1;
+  if (all_one) {return -1;}
+  int find = compare(s3, N, find_s);   // 大小为N的s3中, 找find_s索引, 没找到-1
+  /*
   for (int i = 0; i < n; i++)
     if (find_s == s3[i]) {find = i; break;}   // 不同字符串之间, 不能单纯的比较
+  */
   if (find != -1) {
     return find;
   } else { printf("error in find_in_s \n"); return -1;}
@@ -77,14 +96,16 @@ int go(int* p, int t, int st) {
   return ans;
 }
 
+// /*
 int main() {
 #ifdef LOCAL
   freopen("a.in", "r", stdin);
 #endif
   if (scanf("%s %s", s1, s2) == 2) {
     //
-    int n = strlen(s1);
-    generate_s3(n);  // 生成s3
+    int n = strlen(s2);
+    N = strlen(s1);   // 传递到全局变量
+    generate_s3(N);  // 生成s3
     int cnt = 0;
     int p = 0, t = 3, st = 0;   // 当前位置, 步长, 状态:先找编码长度
     while (p < n) {
@@ -99,6 +120,21 @@ int main() {
         } else { t = 3; st = 0;}
       }
     }
+    printf("%s\n", ans_s);
   }
   return 0;
 }
+// */
+
+/*
+int main() {
+  // test compare
+  generate_s3(10);
+  N = 10;
+  char mys[20] = "00";
+  int p = compare(s3, 10, mys);
+  printf("%d\n", p);
+
+  return 0;
+}
+*/
