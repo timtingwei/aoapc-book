@@ -55,21 +55,6 @@ void cpystr(char* s, char* s1) {
   memcpy(s, s1, sizeof(char) * strlen(s1));
 }
 
-
-int update_rank() {
-  for (int i = 0; i < stdt_n; i++) {
-    int r = stdt_n;
-    for (int j = 0; j < stdt_n; j++) {
-      if (i == j) continue;
-      if (stdt[j].tot < stdt[i].tot) r--;
-    }
-    printf("i=%d, r=%d\n", i, r);
-    stdt[i].rank = r;
-  }
-  return 0;
-}
-
-
 int del(int i) {
   // 删除索引i学生的信息
   if (i < 0 || i >= stdt_n) {printf("del:no %d student\n", i); return -1;}
@@ -90,7 +75,6 @@ int del(int i) {
   memset(stdt[stdt_n-1].SID, 0, sizeof(stdt[stdt_n-1].SID));
   memset(stdt[stdt_n-1].CID, 0, sizeof(stdt[stdt_n-1].CID));
   memset(stdt[stdt_n-1].name, 0, sizeof(stdt[stdt_n-1].name));
-  update_rank();
   stdt_n--;
 // printf("del: stdt_n=%d\n", stdt_n);
   return stdt_n;
@@ -186,13 +170,14 @@ int rmv() {
           dn++;
         }
       }
-// printf("%d student(s) removed.\n", dn);
+      printf("%d student(s) removed.\n", dn);
     }
   }
   return 1;
 }
 
-int update_query() {
+int update_stat() {
+  // 更新rank, aveg, tot在插入时不更新, 每次用到这几个数据更新
   int t = 0; double a;
   // 计算total, averge
   for (int i = 0; i < stdt_n; i++) {
@@ -235,21 +220,10 @@ int clear_q_stdts() {
 // printf("clear_stdti: q_n=%d\n", q_n);
   return 0;
 }
-/*
-1
-1501087 2 tim 50 50 50 50
-1555555 1 tim 30 30 30 30
-1111111 3 tim 80 80 80 80
-1314144 2 he  20 20 20 20
-2313133 1 he  40 40 40 40
-0
-3
-tim
-he
-*/
+
 int query() {
   // 根据此时数据, 对排名, 总分, 平均分进行计算(改变的是stdt)
-  update_query();
+  update_stat();
   for (;;) {
     printf("Please enter SID or name. Enter 0 to finish.\n");
     clear_q_stdts();   // 每次循环清空前面的临时学生表
@@ -290,8 +264,79 @@ int showrank() {
   printf("Showing the ranklist hurts students' self-esteem. Don't do that.\n");
   return 0;
 }
+
+typedef struct {
+  double aveg;
+  int ps, fs;  // pass 和 fail的同学个数
+} Crouse;
+Crouse crs[10];  // 目前最多十门课
 int showstat() {
-  // ..
+  printf("Please enter class ID, 0 for the whole statistics.\n");
+  // update_stat();  why? rank? aveg? tot?for stdt, now class
+  memset(judge_key, 0, sizeof(judge_key));
+  scanf("%s", judge_key);
+  if (is_zero(judge_key)) {
+    int pa = 0, pthree = 0, ptwo = 0, pone = 0, fa = 0;  // 通过几门课的学生数量
+    for (int i = 0; i < stdt_n; i++) {
+      int pn = 0;  // 通过的科目数量
+      for (int j = 0; j < 4; j++) {
+        if (stdt[i].score[j] >= 60) pn++;
+      }
+      if (pn == 0) fa++;
+      else if (pn == 1) pone++;
+      else if (pn == 2) ptwo++;
+      else if (pn == 3) pthree++;
+      else if (pn == 4) pa++;
+    }
+    printf("Overall:\n");
+    printf("Number of students who passed all subjects: %d\n", pa);
+    printf("Number of students who passed 3 or more subjects: %d\n", pthree);
+    printf("Number of students who passed 2 or more subjects: %d\n", ptwo);
+    printf("Number of students who passed 1 or more subjects: %d\n", pone);
+    printf("Number of students who failed all subjects: %d\n\n", fa);
+  } else {
+    // 只输出某个班级
+    memset(crs, 0, sizeof(crs));    // 不知道这样能不能重置
+    double ca = 0.0, ma = 0.0, ea = 0.0, pa = 0.0;   // 四门课的平均分
+    int sc = 0;  // 属于这个班的同学个数
+    for (int i = 0; i < stdt_n; i++) {
+      if (samestr(stdt[i].CID, judge_key)) {
+          // 这个同学属于judge_key这个班
+          for (int j = 0; j < 4; j++) {
+            crs[j].aveg += stdt[i].score[j];
+          }
+          sc++;
+        }
+    }
+    for (int j = 0; j < 4; j++) {crs[j].aveg /= sc;}
+
+    for (int i = 0; i < stdt_n; i++) {
+      if (samestr(stdt[i].CID, judge_key)) {
+          // 这个同学属于judge_key这个班
+          for (int j = 0; j < 4; j++) {
+            if (stdt[i].score[j] < crs[j].aveg) {
+              crs[j].fs++;
+            } else { crs[j].ps++;}
+          }
+        }
+    }
+    printf("Chinese\n");
+    printf("Average Score: %.2f\n", crs[0].aveg);
+    printf("Number of passed students: %d\n", crs[0].ps);
+    printf("Number of failed students: %d\n\n", crs[0].fs);
+    printf("Mathematics\n");
+    printf("Average Score: %.2f\n", crs[1].aveg);
+    printf("Number of passed students: %d\n", crs[1].ps);
+    printf("Number of failed students: %d\n\n", crs[1].fs);
+    printf("English\n");
+    printf("Average Score: %.2f\n", crs[2].aveg);
+    printf("Number of passed students: %d\n", crs[2].ps);
+    printf("Number of failed students: %d\n\n", crs[2].fs);
+    printf("Programming\n");
+    printf("Average Score: %.2f\n", crs[3].aveg);
+    printf("Number of passed students: %d\n", crs[3].ps);
+    printf("Number of failed students: %d\n\n", crs[3].fs);
+  }
   return 0;
 }
 
@@ -311,12 +356,16 @@ int startmenu() {
     else if (c == 5) showstat();
   }
 
-  printstdt();
+// printstdt();
 
   return 1;
 }
 
 int main() {
+#ifdef LOCAL
+  freopen("a.in", "r", stdin);
+  freopen("b.out", "w", stdout);
+#endif
   getmenu();
   for (;;) {
     if (!startmenu()) break;
@@ -327,6 +376,21 @@ int main() {
 
 
 /*
+
+my test input:
+1
+1501087 2 tim 50 50 50 50
+1555555 1 tim 30 30 30 30
+1111111 3 tim 80 80 80 80
+1314144 2 he  20 20 20 20
+2313133 1 he  40 40 40 40
+0
+3
+tim
+he
+
+
+  
 AC的输入输出
 Sample Input:
 1
