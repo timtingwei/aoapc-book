@@ -1,8 +1,9 @@
 // copyright [2018] <mituh>
 // UVa 521 Spreadsheet Tracking 追踪电子表格中的单元格
 /*
-  思路: 对需要查询的数据进行计算
-  先写框架, 后写细节
+  思路:
+  1, 只对需要查询的数据(a,b)进行计算
+  2, 先写框架后写细节
 
 intput:
 7 9
@@ -28,9 +29,9 @@ Cell data in (6,5) moved to (1,2)
 #include <stdio.h>
 #include <string.h>
 char cmd[3];
-int alg[50];  // 50操作次数
-int a_para[50][50];
-int para_n[50];
+int alg[250];  // 250操作次数
+int a_para[250][250];
+int para_n[250];
 int is_gone;
 
 void del_r(int* para, int n, int* r, int* c) {
