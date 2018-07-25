@@ -24,6 +24,8 @@ typedef struct {
   char CID[25];
   char name[15];
   int score[5];   // chinese, math, english, programming
+  int tot, rank;
+  double aveg;
 } Student;
 Student stdt[110];   // 最多存放100个学生信息
 int stdt_n = 0;
@@ -53,6 +55,21 @@ void cpystr(char* s, char* s1) {
   memcpy(s, s1, sizeof(char) * strlen(s1));
 }
 
+
+int update_rank() {
+  for (int i = 0; i < stdt_n; i++) {
+    int r = stdt_n;
+    for (int j = 0; j < stdt_n; j++) {
+      if (i == j) continue;
+      if (stdt[j].tot < stdt[i].tot) r--;
+    }
+    printf("i=%d, r=%d\n", i, r);
+    stdt[i].rank = r;
+  }
+  return 0;
+}
+
+
 int del(int i) {
   // 删除索引i学生的信息
   if (i < 0 || i >= stdt_n) {printf("del:no %d student\n", i); return -1;}
@@ -73,6 +90,7 @@ int del(int i) {
   memset(stdt[stdt_n-1].SID, 0, sizeof(stdt[stdt_n-1].SID));
   memset(stdt[stdt_n-1].CID, 0, sizeof(stdt[stdt_n-1].CID));
   memset(stdt[stdt_n-1].name, 0, sizeof(stdt[stdt_n-1].name));
+  update_rank();
   stdt_n--;
 // printf("del: stdt_n=%d\n", stdt_n);
   return stdt_n;
@@ -113,6 +131,8 @@ int getmenu() {
   return 0;
 }
 
+
+
 int add() {
   // ..
   for (;;) {
@@ -136,9 +156,10 @@ int add() {
         cpystr(stdt[stdt_n].CID, tmp_stdt.CID);
         cpystr(stdt[stdt_n].name, tmp_stdt.name);
         stdt[stdt_n].score[0] = tmp_stdt.score[0];
-        stdt[stdt_n].score[1] = tmp_stdt.score[2];
+        stdt[stdt_n].score[1] = tmp_stdt.score[1];
+        stdt[stdt_n].score[2] = tmp_stdt.score[2];
         stdt[stdt_n].score[3] = tmp_stdt.score[3];
-// printf("SID=%s, CID=%s, name=%s, chinese=%d, math=%d, english=%d, programming=%d\n",
+// printf("SID=%s, CID=%s, name=%s, chinese=%d, math=%d, english=%d, programming=%d\n");
 // stdt[stdt_n].SID, stdt[stdt_n].CID, stdt[stdt_n].name,
 // stdt[stdt_n].score[0], stdt[stdt_n].score[1],
 // stdt[stdt_n].score[2], stdt[stdt_n].score[3]);
@@ -159,22 +180,114 @@ int rmv() {
       int dn = 0;
       for (int i = 0; i < stdt_n; i++) {
         // judge_key与数据库中的SID or name匹配
-        if (samestr(judge_key, stdt[i].SID) || (samestr(judge_key, stdt[i].name))) {
+        if (samestr(judge_key, stdt[i].SID)
+            || (samestr(judge_key, stdt[i].name))) {
           del(i);  // 删除该条信息
           dn++;
         }
       }
-      printf("%d student(s) removed.\n", dn);
+// printf("%d student(s) removed.\n", dn);
     }
   }
   return 1;
 }
-int query() {
-  // ..
+
+int update_query() {
+  int t = 0; double a;
+  // 计算total, averge
+  for (int i = 0; i < stdt_n; i++) {
+    int t = 0, r = stdt_n;
+    for (int j = 0; j < 4; j++) {   // 四门课成绩
+      t += stdt[i].score[j];
+    }
+    stdt[i].tot = t;
+    stdt[i].aveg = (double)t / 4;
+  }
+
+  // 计算当前所有学生的排名, stdt
+  for (int i = 0; i < stdt_n; i++) {
+    int r = stdt_n;
+    for (int j = 0; j < stdt_n; j++) {
+      if (i == j) continue;
+      if (stdt[j].tot < stdt[i].tot) r--;  // 有比他小的, rank-1
+    }
+    stdt[i].rank = r;
+// printf("i=%d, rank=%d\n", i, stdt[i].rank);
+  }
+
   return 0;
 }
+
+
+Student q_stdts[110];   // 最多存放100个学生信息, 用于query
+int q_n = 0;
+
+int clear_q_stdts() {
+  for (int i = 0; i < q_n; i++) {
+    // ..
+    memset(q_stdts[i].SID, 0, sizeof(q_stdts[i].SID));
+    memset(q_stdts[i].CID, 0, sizeof(q_stdts[i].CID));
+    memset(q_stdts[i].name, 0, sizeof(q_stdts[i].name));
+    memset(q_stdts[i].score, 0, sizeof(q_stdts[i].score));
+    q_stdts[i].rank = 0, q_stdts[i].tot = 0, q_stdts[i].aveg = 0.0;
+  }
+  q_n = 0;
+// printf("clear_stdti: q_n=%d\n", q_n);
+  return 0;
+}
+/*
+1
+1501087 2 tim 50 50 50 50
+1555555 1 tim 30 30 30 30
+1111111 3 tim 80 80 80 80
+1314144 2 he  20 20 20 20
+2313133 1 he  40 40 40 40
+0
+3
+tim
+he
+*/
+int query() {
+  // 根据此时数据, 对排名, 总分, 平均分进行计算(改变的是stdt)
+  update_query();
+  for (;;) {
+    printf("Please enter SID or name. Enter 0 to finish.\n");
+    clear_q_stdts();   // 每次循环清空前面的临时学生表
+    memset(judge_key, 0, sizeof(judge_key));
+    if (scanf("%s", judge_key) == 1) {
+      if (is_zero(judge_key)) return 0;
+      int dn = 0;
+      for (int i = 0; i < stdt_n; i++) {
+        // judge_key与数据库中的SID or name匹配
+        if (samestr(judge_key, stdt[i].SID)
+            || (samestr(judge_key, stdt[i].name))) {
+          // q_stdts[q_n] = stdt[i];
+          cpystr(q_stdts[q_n].SID, stdt[i].SID);
+          cpystr(q_stdts[q_n].CID, stdt[i].CID);
+          cpystr(q_stdts[q_n].name, stdt[i].name);
+          q_stdts[q_n].score[0] = stdt[i].score[0];
+          q_stdts[q_n].score[1] = stdt[i].score[1];
+          q_stdts[q_n].score[2] = stdt[i].score[2];
+          q_stdts[q_n].score[3] = stdt[i].score[3];
+          q_stdts[q_n].rank = stdt[i].rank;
+          q_stdts[q_n].tot = stdt[i].tot;
+          q_stdts[q_n].aveg = stdt[i].aveg;
+          q_n++;
+        }
+      }
+      for (int i = 0; i < q_n; i++) {
+        printf("%d %s %s %s %d %d %d %d %d %.2f\n",
+               q_stdts[i].rank, q_stdts[i].SID, q_stdts[i].CID,
+               q_stdts[i].name, q_stdts[i].score[0], q_stdts[i].score[1],
+               q_stdts[i].score[2], q_stdts[i].score[3],
+               q_stdts[i].tot, q_stdts[i].aveg);
+      }
+    }
+  }
+  return 1;
+}
 int showrank() {
-  // ..
+  printf("Showing the ranklist hurts students' self-esteem. Don't do that.\n");
   return 0;
 }
 int showstat() {
