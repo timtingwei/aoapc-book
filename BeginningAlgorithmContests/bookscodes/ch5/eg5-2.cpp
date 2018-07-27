@@ -27,13 +27,14 @@ quit
  */
 
 #include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <vector>
 using std::cin; using std::cout;
-using std::vector;
+using std::vector; using std::string;
 const int MAXN = 10000;
 vector<int> piles[MAXN];
-int N = 10;
+int N;
 // int pos[MAXN][MAXN];  // 储存每个木块当前的pile, height
 // 只作为一个想法, 仍旧用搜索的方法, 找到木块的pile, height
 
@@ -41,28 +42,49 @@ void addpile(int n) {
   for (int i = 0; i < n; i++) { vector<int> ivec = {i}; piles[i] = ivec;}
 }
 
-int blk_pos[3];  // 用于find时, 保存木块的位置
-void findblock(int ib, int n, int* pos) {
-  // pos[0] -> wpile, pos[1] -> wpos
-  memset(blk_pos, 0, sizeof(blk_pos));
-  if (ib >= n) {cout << "findblock:ib>=n\n"; return;}
-  for (int i = 0; i < n; i++) {
+void printpile() {
+  for (int i = 0; i < N; i++) {
+    cout << i << ":";
     for (int j = 0; j < piles[i].size(); j++) {
-      if (piles[i][j] == ib) { pos[0] = i; pos[1] = j; return;}
+      cout << " " << piles[i][j];
+    }
+    cout << "\n";
+  }
+  cout << "\n";
+}
+
+// 找到编号为ib的木块, 在p堆, 高度h
+void findblock(int ib, int* p, int* h) {
+  // pos[0] -> wpile, pos[1] -> wpos
+  // if (ib >= N) {cout << "findblock error:ib>=n\n"; return;}
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < piles[i].size(); j++) {
+      if (piles[i][j] == ib) { *p = i; *h = j; return;}
     }
   }
 }
 
-void initblocks(int size, int wp, int wh) {
+// 归位 p堆高度h以上的木块
+void clear_above(int p, int h) {
   // 将wp(pile索引), wh(高度索引)以上全部归位, 目前pile的高度是size 0 1 2 => 3
 // printf("a: size=%d, wp=%d, wh=%d\n", size, wp, wh);
-  for (int i = size - 1; i > wh; i--) {
-    piles[piles[wp][i]] = {piles[wp][i]};        // 归位
-    piles[wp].pop_back();                        // 从当前pile, pop_back()
+  for (int i = h + 1; i < piles[p].size(); i++) {
+    int b = piles[p][i];
+    piles[b].push_back(b);     // 归位
   }
-  cout << "init above " << wp << " " << wh << "\n";
+  piles[p].resize(h+1);        // 只留下下标0～h
+// cout << "init above " << wp << " " << wh << "\n";
 }
 
+// 将p堆高度h以上的木块, 整体移动到p2堆的上部
+void pile_onto(int p, int h, int p2) {
+  for (int i = h; i < piles[p].size(); i++) {
+    piles[p2].push_back(piles[p][i]);
+  }
+  piles[p].resize(h);
+}
+
+/*
 void move_onto(int a, int b) {
   // 把a和b上方的木块全部归位, 然后把a摞在b上面
   if (a == b) return;   // 非法指令, a和b在同一堆
@@ -82,7 +104,7 @@ void move_onto(int a, int b) {
   // 把a push_back进b pile
   piles[wp].push_back(a);
 
-  cout << "move " << a << " onto " << b << "\n";
+// cout << "move " << a << " onto " << b << "\n";
 }
 
 void move_over(int a, int b) {
@@ -96,7 +118,7 @@ void move_over(int a, int b) {
 
   findblock(b, N, blk_pos);
   piles[blk_pos[0]].push_back(a);
-  cout << "move " << a << " over " << b << "\n";
+// cout << "move " << a << " over " << b << "\n";
 }
 
 void pile_over(int a, int b) {
@@ -111,6 +133,7 @@ void pile_over(int a, int b) {
     piles[wp_b].push_back(piles[wp][i]);     // 边添加
     piles[wp].pop_back();                    // 边删除
   }
+// cout << "pile " << a << " over " << b << "\n";
 }
 
 void pile_onto(int a, int b) {
@@ -122,68 +145,55 @@ void pile_onto(int a, int b) {
 
   // 2, 然后把a及上面的木块整体摞在b上
   pile_over(a, b);
-  /*
-  int wp_b = wp;
-  findblock(a, N, blk_pos);
-  size = piles[blk_pos[0]].size(); wp = blk_pos[0]; wh = blk_pos[1];
-  // 将a push_back()到归位后的b以上
-  for (int i = wh; i < size; i++) {
-    piles[wp_b].push_back(piles[wp][i]);     // 边添加
-    piles[wp].pop_back();                    // 边删除
-  }
-  */
-  cout << "pile " << a << " onto " << b << "\n";
-}
 
-void printpile(const int &n) {
-  for (int i = 0; i < n; i++) {
-    cout << i << ":";
-    for (int j = 0; j < piles[i].size(); j++) {
-      cout << " " << piles[i][j];
-    }
-    cout << "\n";
-  }
+// cout << "pile " << a << " onto " << b << "\n";
 }
+*/
 
 int main() {
-  addpile(N);
-  printpile(N);
-
-  /*
-  move_over(0, 8);
-  move_over(4, 8);
-  move_over(5, 8);
-  printpile(N);
-  move_over(4, 1);
-  printpile(N);
-  pile_onto(8, 1);
-  printpile(N);
-  */
-
-
-
-  move_onto(9, 1);
-  printpile(N);
-  move_over(8, 1);
-  printpile(N);
-  move_over(7, 1);
-  printpile(N);
-  move_over(6, 1);
-  printpile(N);
-  pile_over(8, 6);
-  printpile(N);
-  pile_over(8, 5);
-  printpile(N);
-  move_over(2, 1);
-  printpile(N);
-  move_over(4, 9);
-  printpile(N);
-
+#ifdef LOCAL
+  freopen("a.in", "r", stdin);
+  freopen("b.out", "w", stdout);
+#endif
+  if (scanf("%d", &N) == 1 && N) {
+    int a, b;
+    string s1, s2;
+    addpile(N);
+    while (cin >> s1 >> a >> s2 >> b) {
+      int pa, pb, ha, hb;
+      findblock(a, &pa, &ha);
+      findblock(a, &pb, &hb);
+      if (pa == pb) {continue;}       // 排序
+      if (s2 == "onto") clear_above(pb, hb);
+      if (s1 == "move") clear_above(pa, ha);
+      pile_onto(pa, ha, pb);
+    }
+    printpile();
+    /*
+      for (;;) {
+      string s1, s2;
+      int a, b;
+      cin >> s1;
+      if (s1 == "quit") break;
+      cin >> a >> s2 >> b;
+      if (s1[0] == 'm') {
+      if (s2[1] == 'n') move_onto(a, b);
+      else if (s2[1] == 'v') move_over(a, b);
+      } else if (s1[0] == 'p') {
+      if (s2[1] == 'n') pile_onto(a, b);
+      else if (s2[1] == 'v') pile_over(a, b);
+      }
+      }
+      printpile(N);
+      }
+    */
+  }
 
   return 0;
 }
 
 /*
+10
 move 9 onto 1
 move 8 over 1
 move 7 over 1
@@ -192,4 +202,16 @@ pile 8 over 6
 pile 8 over 5
 move 2 over 1
 move 4 over 9
+quit
+
+0: 0
+1: 1 9 2 4
+2:
+3: 3
+4:
+5: 5 8 7 6
+6:
+7:
+8:
+9:
 */
